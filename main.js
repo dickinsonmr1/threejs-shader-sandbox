@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import GUI from 'lil-gui'; 
 import Stats from 'three/addons/libs/stats.module.js';
 
+import vertexShader from './shaders/vertex.glsl?raw';
+import fragmentShader from './shaders/fragment.glsl?raw';
+
 // https://threejs.org/manual/#en/installation
 
 const scene = new THREE.Scene();
@@ -32,16 +35,8 @@ scene.add( cube );
 
 const icoGeometry = new THREE.IcosahedronGeometry(1, 1);
 const icoMaterial = new THREE.ShaderMaterial({
-    vertexShader: `
-        void main() {
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-    `,
-    fragmentShader: `
-        void main() {
-            gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-        }
-    `
+    vertexShader: vertexShader,
+    fragmentShader: fragmentShader
 });
 const ico = new THREE.Mesh(icoGeometry, icoMaterial)
 ico.position.set(2, 0, 0);
