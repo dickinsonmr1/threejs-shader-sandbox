@@ -1,10 +1,12 @@
 
 uniform float uTime;
+uniform float uRadius;
+uniform sampler2D uTexture;
 
 varying vec3 vPosition;
 varying vec3 vNormal;
 
-uniform float uRadius;
+
 
 varying vec2 vUv;
 

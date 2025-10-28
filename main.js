@@ -6,17 +6,22 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import planeVertexShader from './shaders/plane/vertex.glsl?raw';
 import planeFragmentShader from './shaders/plane/fragment.glsl?raw';
 
+import organicVertexShader from './shaders/organic/vertex.glsl?raw';
+import organicFragmentShader from './shaders/organic/fragment.glsl?raw';
+
 import icoVertexShader from './shaders/icosahedron/vertex.glsl?raw';
 import icoFragmentShader from './shaders/icosahedron/fragment.glsl?raw';
 
 import sphereVertexShader from './shaders/sphere/vertex.glsl?raw';
 import sphereFragmentShader from './shaders/sphere/fragment.glsl?raw';
 
+import puppyTexture from './images/puppy.jpg'
 
 // https://threejs.org/manual/#en/installation
 
 // tutorial from here: https://youtu.be/oKbCaj1J6EI?si=LQo_a9qhDb_ztYgn
 
+const clock = new THREE.Clock();
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 camera.position.z = 5;
@@ -54,7 +59,8 @@ const planeMaterial = new THREE.ShaderMaterial({
     // uniforms: global (set for all vertexes / fragments)
     uniforms: {
         uTime: {value: 0.0},
-        uRadius: {value: 0.5}
+        uRadius: {value: 0.5},
+        uTexture: {value: new THREE.TextureLoader().load(puppyTexture)}
         // TODO: add variable and shader logic to switch between shader types
     },
     //wireframe: true
@@ -65,6 +71,19 @@ const plane = new THREE.Mesh(planeGeometry, planeMaterial);
 plane.position.set(-3, 0, 0);
 scene.add(plane);
 gui.add(planeMaterial.uniforms.uRadius, "value").min(0).max(1).name("uRadius");
+
+// organic plane
+const organicGeometry = new THREE.PlaneGeometry(2, 2, 10, 10);
+const organicMaterial = new THREE.ShaderMaterial({
+    vertexShader: organicVertexShader,    
+    fragmentShader: organicFragmentShader,
+    uniforms: {
+        uTime: {value: 0.0},
+    },
+});
+const organicMesh = new THREE.Mesh(organicGeometry, organicMaterial);
+organicMesh.position.set(0, 3, 0);
+scene.add(organicMesh);
 
 // sphere
 const sphereGeometry = new THREE.SphereGeometry(1);
@@ -112,10 +131,15 @@ ico.position.set(3, 0, 0);
 scene.add(ico);
 
 function animate() {
-  cube.rotation.x += 0.01;
-  cube.rotation.y += 0.01;
 
-  renderer.render( scene, camera );
+    if(!clock)
+        return;
 
-  stats.update();
+    const time = clock.getElapsedTime() / 1000;
+    cube.rotation.x += 0.01;
+    cube.rotation.y += 0.01;
+
+    renderer.render( scene, camera );
+    organicMaterial.uniforms.uTime.value = time;
+    stats.update();
 }
