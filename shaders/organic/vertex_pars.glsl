@@ -1,13 +1,6 @@
 
 uniform float uTime;
-
-varying vec3 vPosition;
-varying vec3 vNormal;
-varying vec2 vUv;
 varying float vDisplacement;
-
-// macro - defined at compiletime
-#define PI 3.14159265358979323846
 
 /* 
 * SMOOTH MOD
@@ -34,7 +27,6 @@ float wave(vec3 position) {
     return fit(smoothMod(position.y * 6.0, 1.0, 1.5), 0.35, 0.6, 0.0, 1.0);
 }
 
-
 float mod289(float x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
 vec4 mod289(vec4 x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
 vec4 perm(vec4 x){return mod289(((x * 34.0) + 1.0) * x);}
@@ -59,23 +51,4 @@ float noise(vec3 p){
     vec2 o4 = o3.yw * d.x + o3.xz * (1.0 - d.x);
 
     return o4.y * d.y + o4.x * (1.0 - d.y);
-}
-
-void main() {
-    vec3 coords = normal;
-    coords.y += uTime;
-    vec3 noisePattern = vec3(noise(coords));
-    float pattern = wave(noisePattern);
-    vDisplacement = pattern;    
-
-    // varying
-    vPosition = position;
-    vNormal = normal;
-    vUv = uv;
-
-    // MVP    
-    vec3 newPosition = position + (normal * vDisplacement * 0.3);
-    vec4 modelViewPosition = modelViewMatrix * vec4(newPosition, 1.0);
-    vec4 projectedPosition = projectionMatrix * modelViewPosition;
-    gl_Position = projectedPosition;
 }
